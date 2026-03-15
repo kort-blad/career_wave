@@ -2,6 +2,9 @@ import requests
 import config
 
 
+global_memory = {}
+
+
 memory = [
     {
         'role':'system',
