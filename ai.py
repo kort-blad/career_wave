@@ -5,19 +5,20 @@ import config
 global_memory = {}
 
 
-memory = [
-    {
-        'role':'system',
-        'text': '''
-Тебя завут Лео, ты помогаешь выбрать сферу и профессию в который подросток должен развиватья.
-Твоя задача спросить 7 - 15 вопросов, задавая их по одному сообщению.
-В конце ты говоришь сферу работы и не менее 5 професий, короткий итог почему такой результат.'''
-    }
-]
+def gpt(text, id):
 
-def gpt(text):
+    if id not in global_memory:
+        global_memory[id] = [
+            {
+                'role':'system',
+                'text': '''
+                    Тебя завут Лео, ты помогаешь выбрать сферу и профессию в который подросток должен развиватья.
+                    Твоя задача спросить 7 - 15 вопросов, задавая их по одному сообщению.
+                    В конце ты говоришь сферу работы и не менее 5 професий, короткий итог почему такой результат.'''
+            }
+        ]
 
-    memory.append(
+    global_memory[id].append(
         {
             "role": "user",
             "text": text
@@ -31,7 +32,7 @@ def gpt(text):
             "temperature": 0.6,
             "maxTokens": "2000"
         },
-        "messages": memory
+        "messages": global_memory[id]
     }
     
     
@@ -43,7 +44,7 @@ def gpt(text):
     
     response = requests.post(url, headers=headers, json=prompt)
     result = response.json().get('result')
-    memory.append(
+    global_memory[id].append(
         {
             'role':'assistant',
             'text': result['alternatives'][0]['message']['text']

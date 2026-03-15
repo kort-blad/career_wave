@@ -50,8 +50,9 @@ def callback(callback):
     elif callback.data == "btn1_2":
         keyboard = InlineKeyboardMarkup()
         bot.send_message(callback.message.chat.id,"Чтоб начать тест, напиши в чат привет", reply_markup=keyboard)
-        @bot.message_handler(func=lambda message: True)
-        def echo_all(message):
-            bot.reply_to(message, ai.gpt (message.text))
+
+@bot.message_handler(func=lambda message: True)
+def echo_all(message):
+    bot.reply_to(message, ai.gpt (message.text,message.from_user.id))
 
 bot.polling()
