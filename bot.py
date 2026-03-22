@@ -5,7 +5,7 @@ import ai
 
 bot = telebot.TeleBot(config.key)
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start','stop'])
 def send_welcome(message):
     keyboard = InlineKeyboardMarkup()
     btn1 = InlineKeyboardButton(text="✅Работа", callback_data="btn1")

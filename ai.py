@@ -26,7 +26,7 @@ def gpt(text, id):
     )
 
     prompt = {
-        "modelUri": f"gpt://{config.id_ya}/yandexgpt",
+        "modelUri": f"gpt://{config.id_ya}/yandexgpt/rc",
         "completionOptions": {
             "stream": False,
             "temperature": 0.6,
