@@ -2,6 +2,7 @@ import telebot
 import config
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import ai
+import ai_web
 
 bot = telebot.TeleBot(config.key)
 
@@ -11,8 +12,9 @@ def send_welcome(message):
     btn1 = InlineKeyboardButton(text="✅Работа", callback_data="btn1")
     btn2 = InlineKeyboardButton(text="✅ОГЭ/ЕГЭ", callback_data="btn2")
     btn3 = InlineKeyboardButton(text="✅Премиум версия", callback_data="btn3")
+    btn4 = InlineKeyboardButton(text="✅Институты", callback_data="btn3")
     keyboard.row_width = 1
-    keyboard.add(btn1,btn2,btn3)
+    keyboard.add(btn1,btn2,btn3,btn4)
     bot.reply_to(message, '''
 Привет, это бот который помогает подросткам , найти легкий путь во взрослую жизнь
 
@@ -21,7 +23,10 @@ def send_welcome(message):
 2.Есть желание подготовится к ОГЭ/ЕГЭ , порешать варианты ближайшего прошедшего года или найти репетитора, то тебе сюда ✅ОГЭ/ЕГЭ 
 
 3.Премимум версия дает тебе множиство полезных роликах о том как : 'доработать свое резюме','как вести себя на собеседование' или же просто как выбрать универ.
-И все это только за подписку на несколько каналов если заинтересовало то жми на ✅Премиум версия ''', reply_markup=keyboard)
+И все это только за подписку на несколько каналов если заинтересовало то жми на ✅Премиум версия
+
+
+4. Найти универ после профорентации , пройти демо вступительных твоего универа то жми на ✅Институты''', reply_markup=keyboard)
 
 
 
@@ -47,12 +52,21 @@ def callback(callback):
         btn3_4 = InlineKeyboardButton(text="Четвертый канал", callback_data="btn3_4")
         keyboard.add(btn3_1,btn3_2,btn3_3,btn3_4)
         bot.send_message(callback.message.chat.id,"Подпишись на каналы чтобы получить доступ", reply_markup=keyboard)
+    elif callback.data == "btn4":
+        keyboard = InlineKeyboardMarkup()
+        btn4_1 = InlineKeyboardButton(text="Найти Универ", callback_data="btn1_1")
+        btn4_2 = InlineKeyboardButton(text='Демо версии', callback_data="btn1_2")
+        keyboard.add(btn4_1,btn4_2)
+        bot.send_message(callback.message.chat.id,"Твой путь в универ в этих 2 кнопках", reply_markup=keyboard)
     elif callback.data == "btn1_2":
         keyboard = InlineKeyboardMarkup()
-        bot.send_message(callback.message.chat.id,"Чтоб начать тест, напиши в чат привет", reply_markup=keyboard)
+        bot.send_message(callback.message.chat.id,"Чтоб начать тест, напиши в чат привет , чтоб остановить напиши /stop", reply_markup=keyboard)
+        @bot.message_handler(callback = 'btn1_2')
+        def echo_all(message):
+            bot.reply_to(message, ai.gpt (message.text,message.from_user.id))
+        bot.polling()
+    elif callback.data == "btn1_1":
+        keyboard = InlineKeyboardMarkup()
+        work = bot.send_message(callback.message.chat.id,"Чтоб найти работу, напиши в чат критерии работы, чтоб остановить напиши /stop", reply_markup=keyboard)
+        text_ai = str(work.text)
 
-@bot.message_handler(func=lambda message: True)
-def echo_all(message):
-    bot.reply_to(message, ai.gpt (message.text,message.from_user.id))
-
-bot.polling()

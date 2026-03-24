@@ -45,4 +45,4 @@ def web_ai(text_ai):
     return response.output_text
 
 
-print(web_ai(''))
+print(web_ai('повар 5 вакансий'))
