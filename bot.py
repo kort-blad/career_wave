@@ -6,8 +6,14 @@ import ai_web
 
 bot = telebot.TeleBot(config.key)
 
+flag = False
+work = False
+
 @bot.message_handler(commands=['start','stop'])
 def send_welcome(message):
+    global flag,work
+    work = False
+    flag = False
     keyboard = InlineKeyboardMarkup()
     btn1 = InlineKeyboardButton(text="✅Работа", callback_data="btn1")
     btn2 = InlineKeyboardButton(text="✅ОГЭ/ЕГЭ", callback_data="btn2")
@@ -32,6 +38,7 @@ def send_welcome(message):
 
 @bot.callback_query_handler()
 def callback(callback):
+    global flag,work
     if callback.data == "btn1":
         keyboard = InlineKeyboardMarkup()
         btn1_1 = InlineKeyboardButton(text="Найти работу/стажировку", callback_data="btn1_1")
@@ -60,13 +67,26 @@ def callback(callback):
         bot.send_message(callback.message.chat.id,"Твой путь в универ в этих 2 кнопках", reply_markup=keyboard)
     elif callback.data == "btn1_2":
         keyboard = InlineKeyboardMarkup()
+        flag = True
         bot.send_message(callback.message.chat.id,"Чтоб начать тест, напиши в чат привет , чтоб остановить напиши /stop", reply_markup=keyboard)
-        @bot.message_handler(callback = 'btn1_2')
-        def echo_all(message):
-            bot.reply_to(message, ai.gpt (message.text,message.from_user.id))
-        bot.polling()
     elif callback.data == "btn1_1":
         keyboard = InlineKeyboardMarkup()
-        work = bot.send_message(callback.message.chat.id,"Чтоб найти работу, напиши в чат критерии работы, чтоб остановить напиши /stop", reply_markup=keyboard)
-        text_ai = str(work.text)
+        bot.send_message(callback.message.chat.id,"Чтоб найти работу, напиши в чат критерии работы, чтоб остановить напиши /stop", reply_markup=keyboard)
+        work = True
+        
 
+
+@bot.message_handler(content_types=['text'])
+def echo_all(message):
+    global flag, work
+    if work:
+        text_ai = message.text
+        bot.send_chat_action(message.chat.id, "typing")
+        result = ai_web.web_ai(text_ai)
+        bot.reply_to(message,result)
+
+    if flag:
+        bot.reply_to(message, ai.gpt (message.text,message.from_user.id))
+
+
+bot.polling()

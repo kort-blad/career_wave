@@ -14,7 +14,7 @@ def web_ai(text_ai):
 
     response = client.responses.create(
         model=f"gpt://{config.id_ya}/{YANDEX_CLOUD_MODEL}",
-        input=text_ai,
+        input=text_ai + " выбери не более 7 вакансий и пришли на них ссылки ",
         tools=[
             {
                 "type": "web_search",
@@ -45,4 +45,4 @@ def web_ai(text_ai):
     return response.output_text
 
 
-print(web_ai('повар 5 вакансий'))
+#print(web_ai('повар 5 вакансий'))
