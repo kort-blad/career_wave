@@ -83,7 +83,7 @@ def echo_all(message):
         text_ai = message.text
         bot.send_chat_action(message.chat.id, "typing")
         result = ai_web.web_ai(text_ai)
-        bot.reply_to(message,result)
+        bot.reply_to(message, result or "Не получилось обработать запрос. Попробуй написать профессию, город и желаемый формат работы.")
 
     if flag:
         bot.reply_to(message, ai.gpt (message.text,message.from_user.id))
