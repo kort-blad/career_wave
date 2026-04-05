@@ -3,7 +3,7 @@ import config
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import ai
 import ai_web
-
+import vheck
 bot = telebot.TeleBot(config.key)
 
 flag = False
@@ -11,6 +11,7 @@ work = False
 
 @bot.message_handler(commands=['start','stop'])
 def send_welcome(message):
+    print(message)
     global flag,work
     work = False
     flag = False
@@ -38,6 +39,7 @@ def send_welcome(message):
 
 @bot.callback_query_handler()
 def callback(callback):
+    id_user = callback.from_user.id
     global flag,work
     if callback.data == "btn1":
         keyboard = InlineKeyboardMarkup()
@@ -53,12 +55,15 @@ def callback(callback):
         bot.send_message(callback.message.chat.id,"Выбери нужный вариант чтобы подготовится и сдать экзамен на максимум", reply_markup=keyboard)
     elif callback.data == "btn3":
         keyboard = InlineKeyboardMarkup()
-        btn3_1 = InlineKeyboardButton(text="Первый канал", callback_data="btn3_1")
-        btn3_2 = InlineKeyboardButton(text="Второй канал", callback_data="btn3_2")
-        btn3_3 = InlineKeyboardButton(text="Третий канал", callback_data="btn3_3")
-        btn3_4 = InlineKeyboardButton(text="Четвертый канал", callback_data="btn3_4")
-        keyboard.add(btn3_1,btn3_2,btn3_3,btn3_4)
-        bot.send_message(callback.message.chat.id,"Подпишись на каналы чтобы получить доступ", reply_markup=keyboard)
+        if vheck.check(id_user) == False:
+            btn3_1 = InlineKeyboardButton(text="Первый канал", url="https://t.me/tesstssst")
+            btn3_2 = InlineKeyboardButton(text="Второй канал", callback_data="btn3_2")
+            btn3_3 = InlineKeyboardButton(text="Третий канал", callback_data="btn3_3")
+            btn3_4 = InlineKeyboardButton(text="Проверить", callback_data="btn3_4")
+            keyboard.add(btn3_1,btn3_2,btn3_3,btn3_4)
+            bot.send_message(callback.message.chat.id,"Подпишись на каналы чтобы получить доступ", reply_markup=keyboard)
+        else:
+            bot.reply_to(callback.message, '''Получилось!!!''')
     elif callback.data == "btn4":
         keyboard = InlineKeyboardMarkup()
         btn4_1 = InlineKeyboardButton(text="Найти Универ", callback_data="btn1_1")
@@ -73,7 +78,9 @@ def callback(callback):
         keyboard = InlineKeyboardMarkup()
         bot.send_message(callback.message.chat.id,"Чтоб найти работу, напиши в чат критерии работы, чтоб остановить напиши /stop", reply_markup=keyboard)
         work = True
-        
+    elif callback.data == "btn3_4":
+        if vheck.check(id_user) == True:
+            bot.reply_to(callback.message, '''Получилось!!!''')
 
 
 @bot.message_handler(content_types=['text'])
