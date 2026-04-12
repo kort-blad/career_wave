@@ -4,8 +4,9 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import ai
 import ai_web
 import vheck
+import ai_hh
 bot = telebot.TeleBot(config.key)
-
+hh = False
 flag = False
 work = False
 
@@ -85,12 +86,18 @@ def callback(callback):
 
 @bot.message_handler(content_types=['text'])
 def echo_all(message):
-    global flag, work
+    global flag, work , hh 
     if work:
         text_ai = message.text
         bot.send_chat_action(message.chat.id, "typing")
-        result = ai_web.web_ai(text_ai)
+        result = ai_hh.gpt(text_ai,message.chat.id)
         bot.reply_to(message, result or "Не получилось обработать запрос. Попробуй написать профессию, город и желаемый формат работы.")
+        if hh == True:
+            result = ai_hh.gpt("пришли только текст для запорса hh",message.chat.id)
+            print(result)
+            result = ai_web.web_ai(result)
+            bot.reply_to(message, result or "Не получилось обработать запрос. Попробуй написать профессию, город и желаемый формат работы.")
+        hh = True
 
     if flag:
         bot.reply_to(message, ai.gpt (message.text,message.from_user.id))

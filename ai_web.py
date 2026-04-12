@@ -36,6 +36,7 @@ def format_vacancies(vacancies):
 
 
 def web_ai(text_ai):
+    
     params = {
         "text": text_ai,
         "per_page": DEFAULT_PER_PAGE,
