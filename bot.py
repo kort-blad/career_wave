@@ -1,6 +1,7 @@
 import telebot
 import config
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+import ai_bot_rezume
 import ai
 import ai_web
 import vheck
@@ -9,7 +10,7 @@ bot = telebot.TeleBot(config.key)
 hh = False
 flag = False
 work = False
-
+rezume = False
 @bot.message_handler(commands=['start','stop'])
 def send_welcome(message):
     print(message)
@@ -46,7 +47,8 @@ def callback(callback):
         keyboard = InlineKeyboardMarkup()
         btn1_1 = InlineKeyboardButton(text="Найти работу/стажировку", callback_data="btn1_1")
         btn1_2 = InlineKeyboardButton(text='Тест профоринтация', callback_data="btn1_2")
-        keyboard.add(btn1_1,btn1_2)
+        btn1_3 = InlineKeyboardButton(text='Резюме',callback_data='btn1_3')
+        keyboard.add(btn1_1,btn1_2,btn1_3)
         bot.send_message(callback.message.chat.id,"Выбери нужный вариант чтобы попасть в мир Работы и Стажировок", reply_markup=keyboard)
     elif callback.data == "btn2":
         keyboard = InlineKeyboardMarkup()
@@ -102,5 +104,6 @@ def echo_all(message):
     if flag:
         bot.reply_to(message, ai.gpt (message.text,message.from_user.id))
 
-
+    if rezume:
+        bot.reply_to(message, ai_bot_rezume.gpt (message.text,message.from_user.id))
 bot.polling()
