@@ -6,11 +6,13 @@ import ai
 import ai_web
 import vheck
 import ai_hh
+import ai_university
 bot = telebot.TeleBot(config.key)
 hh = False
 flag = False
 work = False
 rezume = False
+university = False
 @bot.message_handler(commands=['start','stop'])
 def send_welcome(message):
     print(message)
@@ -21,7 +23,7 @@ def send_welcome(message):
     btn1 = InlineKeyboardButton(text="✅Работа", callback_data="btn1")
     btn2 = InlineKeyboardButton(text="✅ОГЭ/ЕГЭ", callback_data="btn2")
     btn3 = InlineKeyboardButton(text="✅Премиум версия", callback_data="btn3")
-    btn4 = InlineKeyboardButton(text="✅Институты", callback_data="btn3")
+    btn4 = InlineKeyboardButton(text="✅Институты", callback_data="btn4")
     keyboard.row_width = 1
     keyboard.add(btn1,btn2,btn3,btn4)
     bot.reply_to(message, '''
@@ -42,7 +44,7 @@ def send_welcome(message):
 @bot.callback_query_handler()
 def callback(callback):
     id_user = callback.from_user.id
-    global flag,work,rezume
+    global flag,work,rezume,university
     if callback.data == "btn1":
         keyboard = InlineKeyboardMarkup()
         btn1_1 = InlineKeyboardButton(text="Найти работу/стажировку", callback_data="btn1_1")
@@ -69,8 +71,8 @@ def callback(callback):
             bot.reply_to(callback.message, '''Получилось!!!''')
     elif callback.data == "btn4":
         keyboard = InlineKeyboardMarkup()
-        btn4_1 = InlineKeyboardButton(text="Найти Универ", callback_data="btn1_1")
-        btn4_2 = InlineKeyboardButton(text='Демо версии', callback_data="btn1_2")
+        btn4_1 = InlineKeyboardButton(text="Найти Универ", callback_data="btn4_1")
+        btn4_2 = InlineKeyboardButton(text='Демо версии', callback_data="btn4_2")
         keyboard.add(btn4_1,btn4_2)
         bot.send_message(callback.message.chat.id,"Твой путь в универ в этих 2 кнопках", reply_markup=keyboard)
     elif callback.data == "btn1_2":
@@ -88,7 +90,10 @@ def callback(callback):
     elif callback.data == "btn3_4":
         if vheck.check(id_user) == True:
             bot.reply_to(callback.message, '''Получилось!!!''')
-
+    elif callback.data == "btn4_1":
+        keyboard = InlineKeyboardMarkup()
+        university = True
+        bot.send_message(callback.message.chat.id,"Чтобы выбрать универ , напиши привет чтоб остановить напиши /stop ", reply_markup=keyboard)
 
 @bot.message_handler(content_types=['text'])
 def echo_all(message):
@@ -110,4 +115,7 @@ def echo_all(message):
 
     if rezume:
         bot.reply_to(message, ai_bot_rezume.gpt (message.text,message.from_user.id))
+    
+    if university:
+        bot.reply_to(message, ai_university.gpt (message.text,message.from_user.id))
 bot.polling()
