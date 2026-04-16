@@ -42,7 +42,7 @@ def send_welcome(message):
 @bot.callback_query_handler()
 def callback(callback):
     id_user = callback.from_user.id
-    global flag,work
+    global flag,work,rezume
     if callback.data == "btn1":
         keyboard = InlineKeyboardMarkup()
         btn1_1 = InlineKeyboardButton(text="Найти работу/стажировку", callback_data="btn1_1")
@@ -81,6 +81,10 @@ def callback(callback):
         keyboard = InlineKeyboardMarkup()
         bot.send_message(callback.message.chat.id,"Чтоб найти работу, напиши в чат критерии работы, чтоб остановить напиши /stop", reply_markup=keyboard)
         work = True
+    elif callback.data == "btn1_3":
+        keyboard = InlineKeyboardMarkup()
+        rezume = True
+        bot.send_message(callback.message.chat.id,"Чтобы создать резюме, напиши в чат критерии , чтоб остановить напиши /stop", reply_markup=keyboard)
     elif callback.data == "btn3_4":
         if vheck.check(id_user) == True:
             bot.reply_to(callback.message, '''Получилось!!!''')
@@ -88,7 +92,7 @@ def callback(callback):
 
 @bot.message_handler(content_types=['text'])
 def echo_all(message):
-    global flag, work , hh 
+    global flag, work , hh , rezume
     if work:
         text_ai = message.text
         bot.send_chat_action(message.chat.id, "typing")
